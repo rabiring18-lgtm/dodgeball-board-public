@@ -1,0 +1,11 @@
+{
+  "name": "ROCKS 戦術ボード",
+  "short_name": "ROCKS",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#111821",
+  "theme_color": "#c51f35",
+  "lang": "ja"
+}
