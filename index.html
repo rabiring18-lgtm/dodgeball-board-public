@@ -1,0 +1,2041 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ROCKS 戦術ボード</title>
+  <style>
+    :root {
+      --rocks-bg: #0b0f15;
+      --rocks-bg-mid: #111821;
+      --rocks-panel: #151b23;
+      --rocks-panel-light: #202936;
+      --rocks-panel-dark: #0f141b;
+      --rocks-border: #343e4b;
+      --rocks-silver: #aeb7c3;
+      --rocks-text: #f5f7fa;
+      --rocks-muted: #8d98a6;
+      --rocks-red: #c51f35;
+      --rocks-red-bright: #ee3048;
+      --rocks-blue: #2d7ee8;
+      --rocks-shadow: rgba(0, 0, 0, 0.35);
+      --rocks-radius: 12px;
+      --line: #222832;
+      --paper: #eef2f5;
+      --blue: #1d68d8;
+      --blue-soft: #dcecff;
+      --red: #d93636;
+      --red-soft: #ffe3e3;
+      --ink: var(--rocks-text);
+      --panel: var(--rocks-panel);
+      --button: #1a222d;
+      --button-border: #5d6876;
+      --active: var(--rocks-red);
+      --active-border: var(--rocks-red-bright);
+      --shadow: 0 16px 42px var(--rocks-shadow);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 50% 26%, rgba(58, 70, 88, 0.58), transparent 38%),
+        radial-gradient(circle at 78% 7%, rgba(197, 31, 53, 0.13), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 18px 18px,
+        linear-gradient(90deg, rgba(174, 183, 195, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(0deg, rgba(174, 183, 195, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
+        radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.38) 100%),
+        linear-gradient(180deg, var(--rocks-bg-mid), var(--rocks-bg));
+      color: var(--rocks-text);
+      font-family: "Segoe UI Variable", "Segoe UI", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+      overscroll-behavior: none;
+    }
+    body { min-height: 100svh; }
+    .app {
+      height: 100dvh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+      overflow: hidden;
+    }
+    header {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 6px;
+      min-height: 58px;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 42%),
+        linear-gradient(90deg, var(--rocks-panel-dark), var(--rocks-panel), var(--rocks-panel-dark));
+      border: 1px solid rgba(174, 183, 195, 0.24);
+      border-bottom: 3px solid var(--rocks-red);
+      border-radius: var(--rocks-radius);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: visible;
+    }
+    header::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 4px;
+      height: 28px;
+      background: linear-gradient(180deg, var(--rocks-red-bright), var(--rocks-red));
+      transform: skewX(-18deg);
+      border-radius: 2px;
+      box-shadow: 10px 0 0 rgba(197, 31, 53, 0.32);
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+      pointer-events: none;
+    }
+    h1 {
+      margin: 0;
+      flex: 0 1 auto;
+      min-width: 0;
+      font-size: clamp(13px, 1.45vw, 20px);
+      line-height: 1.2;
+      white-space: nowrap;
+      color: var(--rocks-silver);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    h1 .brand {
+      color: var(--rocks-text);
+      letter-spacing: 0.08em;
+    }
+    h1 .accent {
+      color: var(--rocks-red-bright);
+    }
+    .controls {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+      min-width: 0;
+      overflow: visible;
+    }
+    button {
+      flex: 0 1 auto;
+      min-height: 38px;
+      border: 1px solid rgba(174, 183, 195, 0.52);
+      border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 44%),
+        linear-gradient(180deg, #242d39, #151c25);
+      color: var(--rocks-text);
+      padding: 6px 8px;
+      font: inherit;
+      font-size: clamp(10px, 1.2vw, 13px);
+      font-weight: 800;
+      line-height: 1.15;
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 2px 0 rgba(0, 0, 0, 0.28);
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+    }
+    button:focus-visible {
+      outline: 3px solid rgba(201, 31, 47, 0.42);
+      outline-offset: 2px;
+    }
+    button:hover {
+      border-color: rgba(238, 48, 72, 0.58);
+      transform: translateY(-1px);
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.36);
+    }
+    button.active {
+      background:
+        linear-gradient(180deg, var(--rocks-red-bright), var(--rocks-red));
+      border-color: var(--active-border);
+      color: #ffffff;
+      transform: translateY(1px);
+      box-shadow: 0 0 12px rgba(238, 48, 72, 0.24), inset 0 2px 5px rgba(0, 0, 0, 0.22);
+    }
+    .fullscreen-panel button.active {
+      background: var(--active);
+      border-color: var(--active-border);
+      color: #ffffff;
+    }
+    .match-info-label {
+      fill: #ffffff;
+      font-size: 0.34px;
+      font-weight: 900;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      letter-spacing: 0.02px;
+      pointer-events: none;
+    }
+    .match-info-plate {
+      fill: rgba(10, 14, 20, 0.82);
+      stroke: rgba(255, 255, 255, 0.22);
+      stroke-width: 0.025;
+      pointer-events: none;
+    }
+    .counter {
+      position: absolute;
+      right: calc(50% - var(--board-w) / 2 + var(--bench-x-pad));
+      bottom: calc(50% - var(--board-h) / 2 + var(--bench-y-pad));
+      z-index: 4;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 1px;
+      padding: 4px 7px;
+      border-radius: 8px;
+      border: 1px solid rgba(174, 183, 195, 0.58);
+      border-left: 4px solid var(--rocks-red-bright);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%),
+        rgba(14, 20, 28, 0.9);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: clamp(9px, 1.05vw, 11px);
+      line-height: 1.15;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: inset 0 1px 9px rgba(0, 0, 0, 0.42), 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+    .counter span {
+      display: block;
+      line-height: 1.1;
+      color: #ffffff;
+    }
+    .save-board {
+      position: absolute;
+      left: calc(50% - var(--board-w) / 2 + var(--bench-x-pad));
+      bottom: calc(50% - var(--board-h) / 2 + var(--bench-y-pad));
+      z-index: 4;
+      min-height: clamp(28px, calc(var(--board-h) / 6 - 8px), 34px);
+      padding: 4px 9px;
+      border-left: 4px solid var(--rocks-red-bright);
+      font-size: clamp(10px, 1.15vw, 12px);
+    }
+    .settings-board {
+      position: absolute;
+      left: calc(50% - var(--board-w) / 2 + var(--bench-x-pad) + 86px);
+      bottom: calc(50% - var(--board-h) / 2 + var(--bench-y-pad));
+      z-index: 4;
+      min-height: clamp(28px, calc(var(--board-h) / 6 - 8px), 34px);
+      padding: 4px 9px;
+      border-left: 4px solid var(--rocks-red-bright);
+      font-size: clamp(10px, 1.15vw, 12px);
+    }
+    .fullscreen-toggle {
+      display: none;
+    }
+    @media (max-width: 1366px), (pointer: coarse) {
+      .fullscreen-toggle {
+        display: inline-block;
+      }
+    }
+    .board-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      --board-w: min(100cqw, calc(100cqh * 1.6667));
+      --board-h: calc(var(--board-w) * 0.6);
+      --bench-x-pad: clamp(10px, calc(var(--board-w) * 0.03), 34px);
+      --bench-y-pad: clamp(5px, calc(var(--board-h) * 0.015), 10px);
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 7px;
+      background:
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) left 10px top 10px / 28px 3px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) left 10px top 10px / 3px 28px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) right 10px top 10px / 28px 3px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) right 10px top 10px / 3px 28px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) left 10px bottom 10px / 28px 3px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) left 10px bottom 10px / 3px 28px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) right 10px bottom 10px / 28px 3px no-repeat,
+        linear-gradient(var(--rocks-red-bright), var(--rocks-red-bright)) right 10px bottom 10px / 3px 28px no-repeat,
+        linear-gradient(90deg, rgba(174, 183, 195, 0.055) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(0deg, rgba(174, 183, 195, 0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        radial-gradient(circle at 50% 20%, rgba(238, 48, 72, 0.12), transparent 44%),
+        linear-gradient(180deg, #18202a, #0d1218);
+      border: 6px solid #111720;
+      outline: 1px solid rgba(174, 183, 195, 0.38);
+      outline-offset: -7px;
+      border-radius: 14px;
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42), inset 0 0 28px rgba(0, 0, 0, 0.48);
+      overflow: hidden;
+      container-type: size;
+    }
+    .board-wrap::before,
+    .board-wrap::after {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+    }
+    .board-wrap::before {
+      left: 10px;
+      top: 10px;
+      border-left: 3px solid var(--rocks-red-bright);
+      border-top: 3px solid var(--rocks-red-bright);
+    }
+    .board-wrap::after {
+      right: 10px;
+      bottom: 10px;
+      border-right: 3px solid var(--rocks-red-bright);
+      border-bottom: 3px solid var(--rocks-red-bright);
+    }
+    svg {
+      display: block;
+      width: min(100%, calc(100cqh * 1.6667));
+      height: auto;
+      aspect-ratio: 5 / 3;
+      max-width: 100%;
+      max-height: 100%;
+      background: #111821;
+      border-radius: 0;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 0 26px rgba(0, 0, 0, 0.24);
+      user-select: none;
+      touch-action: none;
+    }
+    .area-a { fill: url(#blueOuter); }
+    .area-b { fill: url(#redOuter); }
+    .inner-area-a { fill: url(#blueInner); }
+    .inner-area-b { fill: url(#redInner); }
+    .court-line {
+      fill: none;
+      stroke: rgba(20, 27, 36, 0.9);
+      stroke-width: 0.07;
+      vector-effect: non-scaling-stroke;
+      filter: drop-shadow(0 0.018px 0.02px rgba(255, 255, 255, 0.55));
+    }
+    .court-line-shine {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.5);
+      stroke-width: 0.018;
+      vector-effect: non-scaling-stroke;
+      pointer-events: none;
+    }
+    .center-line {
+      stroke: rgba(255, 255, 255, 0.66);
+      stroke-width: 0.024;
+      filter: none;
+    }
+    .court-decoration,
+    .bench-deck,
+    .watermark {
+      pointer-events: none;
+    }
+    .bench-deck {
+      fill: url(#benchDeck);
+    }
+    .watermark {
+      fill: rgba(174, 183, 195, 0.12);
+      font-size: 1.15px;
+      font-weight: 900;
+      letter-spacing: 0.28px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .watermark-line {
+      stroke: rgba(238, 48, 72, 0.34);
+      stroke-width: 0.035;
+      vector-effect: non-scaling-stroke;
+      pointer-events: none;
+    }
+    .team-glow-red {
+      fill: none;
+      stroke: rgba(238, 48, 72, 0.22);
+      stroke-width: 0.045;
+      vector-effect: non-scaling-stroke;
+      pointer-events: none;
+    }
+    .team-glow-blue {
+      fill: none;
+      stroke: rgba(45, 126, 232, 0.2);
+      stroke-width: 0.045;
+      vector-effect: non-scaling-stroke;
+      pointer-events: none;
+    }
+    .label {
+      fill: rgba(72, 83, 99, 0.52);
+      font-size: 0.52px;
+      font-weight: 700;
+      letter-spacing: 0.02px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      filter: drop-shadow(0 0.025px 0.015px rgba(255, 255, 255, 0.38));
+    }
+    .player, .ball { cursor: grab; }
+    .player circle:not(.hit-ring) {
+      stroke: none;
+      filter: drop-shadow(0 0.055px 0.065px rgba(0, 0, 0, 0.34));
+    }
+    .player text {
+      fill: #ffffff;
+      font-size: 0.38px;
+      font-weight: 900;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+    .red-player-name {
+      pointer-events: none;
+    }
+    .player text.red-name,
+    .player text.red-player-name {
+      font-weight: 800;
+    }
+    .player.selected circle:not(.hit-ring) {
+      stroke: rgba(255, 255, 255, 0.92);
+      stroke-width: 0.052;
+      filter: drop-shadow(0 0.055px 0.075px rgba(0, 0, 0, 0.36));
+    }
+    .player.team-a.selected circle:not(.hit-ring) {
+      stroke: rgba(45, 126, 232, 0.95);
+      filter: drop-shadow(0 0.055px 0.075px rgba(0, 0, 0, 0.36)) drop-shadow(0 0 0.055px rgba(45, 126, 232, 0.7));
+    }
+    .player.team-b.selected circle:not(.hit-ring) {
+      stroke: rgba(238, 48, 72, 0.95);
+      filter: drop-shadow(0 0.055px 0.075px rgba(0, 0, 0, 0.36)) drop-shadow(0 0 0.055px rgba(238, 48, 72, 0.65));
+    }
+    .hit-ring {
+      fill: transparent;
+      stroke: transparent;
+      stroke-width: 0;
+      filter: none;
+      pointer-events: all;
+    }
+    .ball.selected .ball-core {
+      filter:
+        brightness(1.08)
+        drop-shadow(0 0 0.08px rgba(255, 255, 255, 0.24))
+        drop-shadow(0 0.05px 0.07px rgba(0, 0, 0, 0.34));
+    }
+    .ball-core {
+      fill: url(#ballPremium);
+      stroke: #b85a00;
+      stroke-width: 0.05;
+      filter: drop-shadow(0 0.045px 0.055px rgba(0, 0, 0, 0.32));
+    }
+    .route-line {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+    #routes,
+    #routeLabels,
+    #preview,
+    #areas,
+    #areaPreview,
+    .route-label {
+      pointer-events: none;
+    }
+    .area-box {
+      fill: rgba(255, 212, 59, 0.16);
+      stroke: #ffd43b;
+      stroke-width: 0.08;
+      rx: 0.12;
+      ry: 0.12;
+      pointer-events: none;
+    }
+    .area-box.preview {
+      fill: rgba(255, 212, 59, 0.1);
+      stroke-dasharray: 0.18 0.12;
+    }
+    .route-label rect,
+    .route-label text {
+      pointer-events: none;
+    }
+    .route-label rect {
+      fill: #ffffff;
+      stroke: #30343a;
+      stroke-width: 0.035;
+      rx: 0.08;
+      ry: 0.08;
+      vector-effect: non-scaling-stroke;
+    }
+    .route-label.run-route rect {
+      fill: #f1f3f5;
+      stroke: #727985;
+      stroke-dasharray: 0.08 0.06;
+    }
+    .route-label text {
+      fill: #111827;
+      font-size: 0.32px;
+      font-weight: 900;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .route-label.run-route text {
+      fill: #30343a;
+    }
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(26, 32, 44, 0.92);
+      color: #ffffff;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .fullscreen-ui {
+      display: none;
+      pointer-events: none;
+    }
+    .fullscreen-counter,
+    .fullscreen-actions,
+    .fullscreen-panel {
+      pointer-events: auto;
+    }
+    .fullscreen-actions {
+      position: absolute;
+      left: max(8px, env(safe-area-inset-left));
+      bottom: max(8px, env(safe-area-inset-bottom));
+      z-index: 6;
+      display: flex;
+      gap: 4px;
+    }
+    .fullscreen-actions button,
+    .fullscreen-panel button {
+      min-height: 38px;
+      padding: 6px 8px;
+      font-size: clamp(10px, 1.2vw, 13px);
+      border-color: rgba(174, 183, 195, 0.5);
+      border-width: 1px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%),
+        linear-gradient(180deg, #26313f, #151c25);
+      color: var(--rocks-text);
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    #fullscreenMenuToggle {
+      border-left: 4px solid var(--rocks-red-bright);
+    }
+    #fullscreenExit {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(210, 218, 228, 0.95));
+      color: #111720;
+    }
+    .fullscreen-panel {
+      position: absolute;
+      left: max(8px, env(safe-area-inset-left));
+      right: max(8px, env(safe-area-inset-right));
+      bottom: calc(max(8px, env(safe-area-inset-bottom)) + 48px);
+      z-index: 7;
+      display: none;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px;
+      overflow: visible;
+      border: 1px solid rgba(174, 183, 195, 0.32);
+      border-left: 4px solid var(--rocks-red);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%),
+        rgba(16, 22, 31, 0.92);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+    }
+    .fullscreen-scrim {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: auto;
+      background: transparent;
+    }
+    .fullscreen-panel button {
+      flex: 0 1 auto;
+      box-shadow: none;
+    }
+    .fullscreen-counter {
+      position: absolute;
+      top: max(8px, env(safe-area-inset-top));
+      right: max(8px, env(safe-area-inset-right));
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      padding: 6px 8px;
+      border: 1px solid rgba(174, 183, 195, 0.5);
+      border-left: 4px solid var(--rocks-red);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 45%),
+        rgba(14, 20, 28, 0.88);
+      color: var(--rocks-text);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+    .fullscreen-counter span {
+      color: #ffffff;
+    }
+    body.fullscreen-mode .fullscreen-counter {
+      display: none;
+    }
+    body.fullscreen-mode {
+      overflow: visible;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(58, 70, 88, 0.52), transparent 44%),
+        linear-gradient(90deg, rgba(174, 183, 195, 0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(0deg, rgba(174, 183, 195, 0.035) 1px, transparent 1px) 0 0 / 32px 32px,
+        var(--rocks-bg);
+    }
+    body.fullscreen-mode .app {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      width: 100vw;
+      height: 100dvh;
+      min-height: 100dvh;
+      gap: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(58, 70, 88, 0.52), transparent 44%),
+        linear-gradient(90deg, rgba(174, 183, 195, 0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(0deg, rgba(174, 183, 195, 0.035) 1px, transparent 1px) 0 0 / 32px 32px,
+        var(--rocks-bg);
+      overflow: hidden;
+    }
+    body.fullscreen-mode header,
+    body.fullscreen-mode .rotate-hint {
+      display: none;
+    }
+    body.fullscreen-mode .board-wrap {
+      width: 100vw;
+      height: 100dvh;
+      min-height: 100dvh;
+      flex: 1 1 auto;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background:
+        linear-gradient(90deg, rgba(174, 183, 195, 0.055) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(0deg, rgba(174, 183, 195, 0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        #111821;
+    }
+    body.fullscreen-mode svg {
+      width: min(100vw, calc(100dvh * 1.6667));
+      height: auto;
+      max-width: 100vw;
+      max-height: calc(100dvh - 58px);
+      border-radius: 0;
+    }
+    body.fullscreen-mode .fullscreen-ui {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+    }
+    body.fullscreen-mode .fullscreen-actions {
+      left: max(10px, env(safe-area-inset-left));
+      bottom: max(10px, env(safe-area-inset-bottom));
+      gap: 10px;
+      z-index: 8;
+    }
+    body.fullscreen-mode #fullscreenMenuToggle,
+    body.fullscreen-mode .settings-board,
+    body.fullscreen-mode #fullscreenExit {
+      min-height: 36px;
+      padding: 5px 9px;
+      font-size: 12px;
+      line-height: 1.1;
+    }
+    body.fullscreen-mode .settings-board {
+      position: fixed;
+      left: calc(max(10px, env(safe-area-inset-left)) + 68px);
+      bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 8;
+    }
+    body.fullscreen-mode #fullscreenExit {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top));
+      right: max(10px, env(safe-area-inset-right));
+      z-index: 8;
+      min-height: 34px;
+      padding-inline: 10px;
+      border-left-width: 1px;
+    }
+    body.fullscreen-mode .counter {
+      position: fixed;
+      right: max(10px, env(safe-area-inset-right));
+      bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 8;
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+    body.fullscreen-mode .save-board {
+      display: none;
+    }
+    body.fullscreen-mode .fullscreen-panel {
+      bottom: calc(max(10px, env(safe-area-inset-bottom)) + 56px);
+    }
+    body.fullscreen-mode.panel-open .fullscreen-panel {
+      display: flex;
+    }
+    body.fullscreen-mode.panel-open .fullscreen-scrim {
+      display: block;
+    }
+    body.fullscreen-mode .toast {
+      bottom: calc(max(8px, env(safe-area-inset-bottom)) + 54px);
+      z-index: 8;
+    }
+    .settings-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10020;
+      display: none;
+      place-items: center;
+      padding: 16px;
+      background: rgba(6, 9, 14, 0.58);
+    }
+    .settings-modal.open {
+      display: grid;
+    }
+    .settings-dialog {
+      width: min(720px, 100%);
+      max-height: min(86dvh, 760px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+      border: 1px solid rgba(174, 183, 195, 0.34);
+      border-left: 5px solid var(--rocks-red-bright);
+      border-radius: 10px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 46%),
+        #111821;
+      color: var(--rocks-text);
+      box-shadow: 0 22px 54px rgba(0, 0, 0, 0.46);
+    }
+    .settings-dialog h2 {
+      margin: 0;
+      padding: 14px 16px 10px;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+    .settings-body {
+      display: grid;
+      gap: 12px;
+      padding: 0 16px 14px;
+      overflow: auto;
+    }
+    .settings-row {
+      display: grid;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--rocks-silver);
+    }
+    .settings-row input,
+    .settings-row select {
+      min-height: 38px;
+      width: 100%;
+      border: 1px solid rgba(174, 183, 195, 0.42);
+      border-radius: 7px;
+      background: #0d141d;
+      color: var(--rocks-text);
+      padding: 6px 8px;
+      font: inherit;
+      font-weight: 800;
+    }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px 14px;
+      border-top: 1px solid rgba(174, 183, 195, 0.18);
+      background: rgba(9, 14, 20, 0.72);
+    }
+    .settings-actions .clear-settings {
+      margin-right: auto;
+      border-left: 4px solid #727985;
+    }
+    @media (max-width: 599px) {
+      .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .settings-actions {
+        flex-wrap: wrap;
+      }
+      .settings-actions button {
+        flex: 1 1 auto;
+      }
+      .settings-actions .clear-settings {
+        flex-basis: 100%;
+        margin-right: 0;
+      }
+    }
+    .rotate-hint {
+      display: none;
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border: 1px solid rgba(174, 183, 195, 0.28);
+      border-radius: 6px;
+      background: rgba(16, 22, 31, 0.9);
+      color: var(--rocks-silver);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+    @media (min-width: 1100px) {
+      header {
+        min-height: 58px;
+      }
+      button {
+        padding-inline: 8px;
+      }
+    }
+    @media (min-width: 600px) and (max-width: 1099px) {
+      .fullscreen-toggle {
+        display: inline-block;
+      }
+      .app {
+        gap: 6px;
+        padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+      }
+      header {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 4px;
+        padding: 5px 6px;
+        min-height: 54px;
+      }
+      h1 {
+        font-size: clamp(12px, 1.45vw, 15px);
+      }
+      .controls {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow: visible;
+        gap: 3px;
+      }
+      button {
+        flex: 0 1 auto;
+        min-height: 38px;
+        padding: 6px 6px;
+        font-size: clamp(10px, 1.15vw, 12px);
+      }
+      .counter {
+        padding: 3px 6px;
+        font-size: 10px;
+      }
+    }
+    @media (min-width: 600px) and (max-width: 1099px) and (orientation: portrait) {
+      .app {
+        height: auto;
+        overflow-y: auto;
+      }
+      header {
+        display: flex;
+        flex-wrap: nowrap;
+      }
+      h1 {
+        text-align: left;
+        font-size: clamp(12px, 1.6vw, 15px);
+      }
+      .board-wrap {
+        flex: 0 0 auto;
+        min-height: auto;
+        height: calc((100vw - 12px) * 3 / 5 + 2px);
+        align-items: start;
+      }
+      svg {
+        width: 100%;
+        height: calc((100vw - 12px) * 3 / 5);
+      }
+    }
+    @media (max-width: 599px) {
+      .watermark,
+      .watermark-line {
+        display: none;
+      }
+      .fullscreen-toggle {
+        display: inline-block;
+      }
+      .app {
+        gap: 4px;
+        padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+      }
+      header {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 5px 6px;
+      }
+      h1 {
+        font-size: 15px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+      }
+      .controls {
+        justify-content: flex-start;
+        overflow: visible;
+        flex-wrap: wrap;
+        gap: 3px;
+        padding-bottom: 1px;
+      }
+      button {
+        flex: 1 1 auto;
+        min-height: 38px;
+        padding: 6px 6px;
+        font-size: clamp(10px, 3vw, 12px);
+      }
+      .counter {
+        padding: 3px 6px;
+        font-size: 9px;
+      }
+      .board-wrap {
+        align-items: start;
+        border-radius: 6px;
+      }
+      svg {
+        width: 100%;
+        height: calc((100vw - 8px) * 3 / 5);
+      }
+    }
+    @media (max-width: 599px) and (orientation: portrait) {
+      .app {
+        height: auto;
+        overflow-y: auto;
+      }
+      .rotate-hint {
+        display: block;
+      }
+      .board-wrap {
+        flex: 0 0 auto;
+        min-height: auto;
+        height: calc((100vw - 8px) * 3 / 5 + 2px);
+      }
+    }
+    @media (max-width: 932px) and (orientation: landscape) and (max-height: 520px) {
+      .app {
+        gap: 4px;
+        padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+      }
+      header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 4px;
+        padding: 4px 6px;
+      }
+      h1 {
+        display: none;
+      }
+      h1 .board-title {
+        display: none;
+      }
+      .controls {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow: visible;
+        gap: 3px;
+      }
+      button {
+        flex: 0 1 auto;
+        min-height: 38px;
+        padding: 6px 6px;
+        font-size: clamp(10px, 2vw, 12px);
+      }
+      .counter {
+        padding: 3px 6px;
+        font-size: 9px;
+      }
+      .board-wrap {
+        border-radius: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1><span class="brand">ROCKS</span><span class="accent"> | </span><span class="board-title">戦術ボード</span></h1>
+      <div class="controls" aria-label="操作ボタン">
+        <button type="button" class="mode active" data-mode="move">配置を動かす</button>
+        <button type="button" class="mode" data-mode="pass">パス</button>
+        <button type="button" class="mode" data-mode="attack">アタック</button>
+        <button type="button" class="mode" data-mode="run">選手移動</button>
+        <button type="button" class="mode" data-mode="area">エリア</button>
+        <button type="button" id="undo">1つ戻す</button>
+        <button type="button" id="clearRoutes">軌道消去</button>
+        <button type="button" id="clearAreas">エリア消去</button>
+        <button type="button" id="nameToggle" aria-pressed="false">名前 OFF</button>
+        <button type="button" id="reset">初期配置</button>
+        <button type="button" id="fullscreenToggle" class="fullscreen-toggle" aria-pressed="false">全画面</button>
+      </div>
+    </header>
+    <div class="rotate-hint">横向きにすると、より操作しやすくなります</div>
+    <section class="board-wrap" aria-label="コート">
+      <svg id="board" viewBox="0 0 20 12" role="img" aria-label="スーパードッジボール戦術ボード">
+        <defs>
+          <linearGradient id="redOuter" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff1f3"></stop>
+            <stop offset="0.48" stop-color="#ffdadd"></stop>
+            <stop offset="1" stop-color="#e9c1c8"></stop>
+          </linearGradient>
+          <linearGradient id="blueOuter" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#eff7ff"></stop>
+            <stop offset="0.48" stop-color="#d9ebff"></stop>
+            <stop offset="1" stop-color="#bdd1e8"></stop>
+          </linearGradient>
+          <linearGradient id="redInner" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff4f5"></stop>
+            <stop offset="0.52" stop-color="#ffe0e3"></stop>
+            <stop offset="1" stop-color="#f5cbd0"></stop>
+          </linearGradient>
+          <linearGradient id="blueInner" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f5fbff"></stop>
+            <stop offset="0.52" stop-color="#dceeff"></stop>
+            <stop offset="1" stop-color="#c7dcef"></stop>
+          </linearGradient>
+          <linearGradient id="centerBand" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#9aa5b2" stop-opacity="0.34"></stop>
+            <stop offset="0.5" stop-color="#f4f7fb" stop-opacity="0.44"></stop>
+            <stop offset="1" stop-color="#5f6976" stop-opacity="0.28"></stop>
+          </linearGradient>
+          <linearGradient id="benchDeck" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#202936"></stop>
+            <stop offset="0.12" stop-color="#121922"></stop>
+            <stop offset="1" stop-color="#0c1118"></stop>
+          </linearGradient>
+          <radialGradient id="courtLight" cx="50%" cy="42%" r="44%">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0.24"></stop>
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+          </radialGradient>
+          <radialGradient id="ballPremium" cx="34%" cy="28%" r="74%">
+            <stop offset="0" stop-color="#fff3a0"></stop>
+            <stop offset="0.18" stop-color="#ffd86a"></stop>
+            <stop offset="0.58" stop-color="#f6b21a"></stop>
+            <stop offset="1" stop-color="#d87500"></stop>
+          </radialGradient>
+          <marker id="arrow-pass" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d68d8"></path>
+          </marker>
+          <marker id="arrow-attack" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#d93636"></path>
+          </marker>
+          <marker id="arrow-run" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3f4650"></path>
+          </marker>
+        </defs>
+        <rect class="bench-deck" x="0" y="10" width="20" height="2"></rect>
+        <text class="watermark" x="10" y="11.1">ROCKS</text>
+        <line class="watermark-line" x1="6.4" y1="10.72" x2="13.6" y2="10.72"></line>
+        <g class="court-decoration">
+          <rect x="0" y="0" width="20" height="10" fill="url(#courtLight)"></rect>
+          <rect x="9" y="0" width="2" height="10" fill="url(#centerBand)"></rect>
+          <line x1="9.06" y1="0" x2="9.06" y2="10" stroke="rgba(197,31,53,0.36)" stroke-width="0.035" vector-effect="non-scaling-stroke"></line>
+          <line x1="10.94" y1="0" x2="10.94" y2="10" stroke="rgba(45,126,232,0.32)" stroke-width="0.035" vector-effect="non-scaling-stroke"></line>
+          <line x1="10" y1="0" x2="10" y2="10" stroke="rgba(255,255,255,0.32)" stroke-width="0.018" vector-effect="non-scaling-stroke"></line>
+          <path d="M 0.45 0.45 H 1.35 M 0.45 0.45 V 1.35 M 19.55 0.45 H 18.65 M 19.55 0.45 V 1.35 M 0.45 9.55 H 1.35 M 0.45 9.55 V 8.65 M 19.55 9.55 H 18.65 M 19.55 9.55 V 8.65" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="0.035" vector-effect="non-scaling-stroke"></path>
+          <path d="M 5 2.5 H 15 M 5 7.5 H 15 M 4 5 H 16" fill="none" stroke="rgba(31,39,52,0.16)" stroke-width="0.02" stroke-dasharray="0.18 0.16" vector-effect="non-scaling-stroke"></path>
+          <path d="M 2.2 1.1 H 17.8 M 2.2 8.9 H 17.8" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.018" vector-effect="non-scaling-stroke"></path>
+          <path class="team-glow-red" d="M 0 0 H 9 V 1.5 H 3 V 8.5 H 9 V 10 H 0 Z"></path>
+          <path class="team-glow-blue" d="M 11 0 H 20 V 10 H 11 V 8.5 H 17 V 1.5 H 11 Z"></path>
+          <path class="team-glow-red" d="M 10 1.5 H 17 V 8.5 H 10 Z"></path>
+          <path class="team-glow-blue" d="M 3 1.5 H 10 V 8.5 H 3 Z"></path>
+        </g>
+        <g id="court">
+          <path class="area-b" d="M 0 0 H 9 V 1.5 H 3 V 8.5 H 9 V 10 H 0 Z"></path>
+          <path class="area-a" d="M 11 0 H 20 V 10 H 11 V 8.5 H 17 V 1.5 H 11 Z"></path>
+          <rect class="area-a inner-area-a" x="3" y="1.5" width="7" height="7"></rect>
+          <rect class="area-b inner-area-b" x="10" y="1.5" width="7" height="7"></rect>
+          <path class="court-line" d="M 3 1.5 H 10 V 8.5 H 3 Z"></path>
+          <path class="court-line" d="M 10 1.5 H 17 V 8.5 H 10 Z"></path>
+          <path class="court-line" d="M 0 0 H 9 V 1.5 H 3 V 8.5 H 9 V 10 H 0 Z"></path>
+          <path class="court-line" d="M 11 0 H 20 V 10 H 11 V 8.5 H 17 V 1.5 H 11 Z"></path>
+          <line class="court-line center-line" x1="10" y1="0" x2="10" y2="10"></line>
+          <path class="court-line-shine" d="M 3 1.5 H 10 V 8.5 H 3 Z"></path>
+          <path class="court-line-shine" d="M 10 1.5 H 17 V 8.5 H 10 Z"></path>
+          <path class="court-line-shine" d="M 0 0 H 9 V 1.5 H 3 V 8.5 H 9 V 10 H 0 Z"></path>
+          <path class="court-line-shine" d="M 11 0 H 20 V 10 H 11 V 8.5 H 17 V 1.5 H 11 Z"></path>
+          <text class="label" x="6.5" y="5">内野</text>
+          <text class="label" x="10.95" y="5">トップ</text>
+          <text class="label" x="14" y="0.75">外野</text>
+          <text class="label" x="14" y="9.25">外野</text>
+          <text class="label" x="18.5" y="5">外野</text>
+          <text class="label" x="6" y="0.75">ライト</text>
+          <text class="label" x="6" y="9.25">レフト</text>
+          <text class="label" x="1.5" y="5">センター</text>
+        </g>
+        <rect class="match-info-plate" id="matchInfoPlate" x="7" y="0.08" width="6" height="0.54" rx="0.18" ry="0.18"></rect>
+        <text class="match-info-label" id="matchInfoLabel" x="10" y="0.35"></text>
+        <g id="areas"></g>
+        <g id="areaPreview"></g>
+        <g id="routes"></g>
+        <g id="preview"></g>
+        <g id="pieces"></g>
+        <g id="routeLabels"></g>
+      </svg>
+      <button type="button" id="saveBoard" class="save-board">画面保存</button>
+      <button type="button" id="settingsOpen" class="settings-board">設定</button>
+      <div class="counter" id="counter">
+        <span id="ballRouteCounter">ボール軌道 0／10</span>
+        <span id="runRouteCounter">選手移動 0／10</span>
+      </div>
+      <div class="toast" id="toast" role="status" aria-live="polite">ボール軌道は10本までです</div>
+      <div class="fullscreen-ui" id="fullscreenUi" aria-hidden="true">
+        <div class="fullscreen-counter" aria-label="軌道数">
+          <span id="fullscreenBallRouteCounter">ボール軌道 0／10</span>
+          <span id="fullscreenRunRouteCounter">選手移動 0／10</span>
+        </div>
+        <div class="fullscreen-scrim" id="fullscreenScrim" aria-hidden="true"></div>
+        <div class="fullscreen-panel" id="fullscreenPanel" aria-label="全画面操作パネル">
+          <button type="button" class="fullscreen-mode-button active" data-mode="move">配置を動かす</button>
+          <button type="button" class="fullscreen-mode-button" data-mode="pass">パス</button>
+          <button type="button" class="fullscreen-mode-button" data-mode="attack">アタック</button>
+          <button type="button" class="fullscreen-mode-button" data-mode="run">選手移動</button>
+          <button type="button" class="fullscreen-mode-button" data-mode="area">エリア</button>
+          <button type="button" data-action="undo">1つ戻す</button>
+          <button type="button" data-action="clearRoutes">軌道消去</button>
+          <button type="button" data-action="clearAreas">エリア消去</button>
+          <button type="button" id="fullscreenNameToggle" data-action="toggleNames" aria-pressed="false">名前 OFF</button>
+          <button type="button" data-action="reset">初期配置</button>
+        </div>
+        <div class="fullscreen-actions">
+          <button type="button" id="fullscreenMenuToggle" aria-expanded="false">操作</button>
+          <button type="button" id="fullscreenExit">全画面終了</button>
+        </div>
+      </div>
+    </section>
+    <div class="settings-modal" id="settingsModal" aria-hidden="true">
+      <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">設定</h2>
+        <div class="settings-body">
+          <label class="settings-row">対戦相手
+            <input type="text" id="settingsOpponent" autocomplete="off">
+          </label>
+          <label class="settings-row">前半／後半
+            <select id="settingsPeriod">
+              <option value="first">前半</option>
+              <option value="second">後半</option>
+            </select>
+          </label>
+          <label class="settings-row">登録人数
+            <select id="settingsPlayerCount"></select>
+          </label>
+          <div class="settings-grid" id="settingsPlayerNames"></div>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="clear-settings" id="settingsClear">入力内容を消去</button>
+          <button type="button" id="settingsCancel">キャンセル</button>
+          <button type="button" class="active" id="settingsSave">保存</button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const svg = document.getElementById("board");
+      const app = document.querySelector(".app");
+      const piecesLayer = document.getElementById("pieces");
+      const areasLayer = document.getElementById("areas");
+      const areaPreviewLayer = document.getElementById("areaPreview");
+      const routesLayer = document.getElementById("routes");
+      const previewLayer = document.getElementById("preview");
+      const routeLabelsLayer = document.getElementById("routeLabels");
+      const matchInfoPlate = document.getElementById("matchInfoPlate");
+      const matchInfoLabel = document.getElementById("matchInfoLabel");
+      const ballRouteCounter = document.getElementById("ballRouteCounter");
+      const runRouteCounter = document.getElementById("runRouteCounter");
+      const fullscreenBallRouteCounter = document.getElementById("fullscreenBallRouteCounter");
+      const fullscreenRunRouteCounter = document.getElementById("fullscreenRunRouteCounter");
+      const toast = document.getElementById("toast");
+      const modeButtons = Array.from(document.querySelectorAll(".mode"));
+      const fullscreenToggle = document.getElementById("fullscreenToggle");
+      const fullscreenUi = document.getElementById("fullscreenUi");
+      const fullscreenScrim = document.getElementById("fullscreenScrim");
+      const fullscreenPanel = document.getElementById("fullscreenPanel");
+      const fullscreenMenuToggle = document.getElementById("fullscreenMenuToggle");
+      const fullscreenExit = document.getElementById("fullscreenExit");
+      const saveBoard = document.getElementById("saveBoard");
+      const nameToggle = document.getElementById("nameToggle");
+      const fullscreenNameToggle = document.getElementById("fullscreenNameToggle");
+      const settingsOpen = document.getElementById("settingsOpen");
+      const settingsModal = document.getElementById("settingsModal");
+      const settingsOpponent = document.getElementById("settingsOpponent");
+      const settingsPeriod = document.getElementById("settingsPeriod");
+      const settingsPlayerCount = document.getElementById("settingsPlayerCount");
+      const settingsPlayerNames = document.getElementById("settingsPlayerNames");
+      const settingsClear = document.getElementById("settingsClear");
+      const settingsCancel = document.getElementById("settingsCancel");
+      const settingsSave = document.getElementById("settingsSave");
+      const fullscreenModeButtons = Array.from(document.querySelectorAll(".fullscreen-mode-button"));
+      const maxBallRoutes = 10;
+      const maxRunRoutes = 10;
+      const maxAreas = 10;
+      const minRedPlayers = 6;
+      const defaultRedPlayers = 12;
+      const maxRedPlayers = 15;
+      const settingsStorageKey = "rocksDodgeballBoardSettings";
+      const playerRadius = 0.38;
+      const ballRadius = 0.27;
+      const redTeamPlayerNames = blankPlayerNames();
+      const redInnerPositions = [
+        [11.35, 5], [13.1, 3], [13.1, 4.15], [13.1, 5.85], [13.1, 7]
+      ];
+      const redInnerPositionsSix = [
+        [13.1, 3.85], [13.1, 5], [13.1, 6.15]
+      ];
+      const redInnerPositionsSeven = [
+        [13.1, 3.275], [13.1, 4.425], [13.1, 5.575], [13.1, 6.725]
+      ];
+      const redOuterPositions = [
+        [1.5, 5], [6, 0.75], [6, 9.25]
+      ];
+      const redBenchPositions = [
+        [6.2, 11], [8.6, 11], [11.4, 11], [13.8, 11],
+        [3.8, 11], [16.2, 11], [10, 11.55]
+      ];
+      let mode = "move";
+      let matchOpponent = "";
+      let matchPeriod = "first";
+      let redPlayerCount = defaultRedPlayers;
+      let players = [];
+      let ball = { x: 10.55, y: 5 };
+      let routes = [];
+      let areas = [];
+      let history = [];
+      let interaction = null;
+      let toastTimer = 0;
+      let showRedNames = false;
+      const routeStyles = {
+        pass: { color: "#1d68d8", width: 0.12, dash: "", marker: "url(#arrow-pass)" },
+        attack: { color: "#d93636", width: 0.16, dash: "", marker: "url(#arrow-attack)" },
+        run: { color: "#3f4650", width: 0.13, dash: "0.22 0.18", marker: "url(#arrow-run)" }
+      };
+
+      function blankPlayerNames() {
+        return Array.from({ length: maxRedPlayers }, () => "");
+      }
+      function clampRedPlayerCount(value) {
+        return Math.max(minRedPlayers, Math.min(maxRedPlayers, Number(value) || defaultRedPlayers));
+      }
+      function defaultSettings() {
+        return {
+          opponent: "",
+          period: "first",
+          playerCount: defaultRedPlayers,
+          playerNames: blankPlayerNames()
+        };
+      }
+      function sanitizeSettings(value) {
+        const base = defaultSettings();
+        if (!value || typeof value !== "object") return base;
+        const names = Array.isArray(value.playerNames) ? value.playerNames : [];
+        return {
+          opponent: typeof value.opponent === "string" ? value.opponent : "",
+          period: value.period === "second" ? "second" : "first",
+          playerCount: clampRedPlayerCount(value.playerCount),
+          playerNames: base.playerNames.map((_, index) => typeof names[index] === "string" ? names[index] : "")
+        };
+      }
+      function loadStoredSettings() {
+        try {
+          return sanitizeSettings(JSON.parse(localStorage.getItem(settingsStorageKey)));
+        } catch (_) {
+          return defaultSettings();
+        }
+      }
+      function storeSettings(settings) {
+        try {
+          localStorage.setItem(settingsStorageKey, JSON.stringify(sanitizeSettings(settings)));
+        } catch (_) {
+          showToast("設定を保存できませんでした");
+        }
+      }
+      function currentSettings() {
+        return {
+          opponent: matchOpponent,
+          period: matchPeriod,
+          playerCount: redPlayerCount,
+          playerNames: [...redTeamPlayerNames]
+        };
+      }
+      function updateMatchInfo() {
+        const periodText = matchPeriod === "second" ? "後半" : "前半";
+        const opponentText = matchOpponent.trim() ? ` vs ${matchOpponent.trim()}` : "";
+        matchInfoLabel.textContent = `ROCKS${opponentText}｜${periodText}`;
+        matchInfoLabel.removeAttribute("textLength");
+        matchInfoLabel.removeAttribute("lengthAdjust");
+        const maxPlateWidth = 18.4;
+        const maxTextWidth = maxPlateWidth - 0.7;
+        let textWidth = 5.2;
+        try {
+          textWidth = matchInfoLabel.getComputedTextLength();
+          if (textWidth > maxTextWidth) {
+            matchInfoLabel.setAttribute("textLength", maxTextWidth);
+            matchInfoLabel.setAttribute("lengthAdjust", "spacingAndGlyphs");
+            textWidth = maxTextWidth;
+          }
+        } catch (_) {
+          textWidth = Math.min(maxTextWidth, Math.max(5.2, Array.from(matchInfoLabel.textContent).length * 0.24));
+        }
+        const plateWidth = Math.min(maxPlateWidth, Math.max(5.2, textWidth + 0.7));
+        matchInfoPlate.setAttribute("x", String(10 - plateWidth / 2));
+        matchInfoPlate.setAttribute("width", String(plateWidth));
+      }
+      function applySettings(settings) {
+        const next = sanitizeSettings(settings);
+        matchOpponent = next.opponent;
+        matchPeriod = next.period;
+        redPlayerCount = next.playerCount;
+        next.playerNames.forEach((name, index) => {
+          redTeamPlayerNames[index] = name;
+        });
+        const bluePlayers = players.filter((player) => player.team === "A");
+        players = [...bluePlayers, ...initialRedPlayers(true)];
+        clearSelected();
+        updateMatchInfo();
+        renderPieces();
+      }
+      function redPlayerPosition(num, count) {
+        if (count <= 6) {
+          return num <= 3 ? redInnerPositionsSix[num - 1] : redOuterPositions[num - 4];
+        }
+        if (count === 7) {
+          return num <= 4 ? redInnerPositionsSeven[num - 1] : redOuterPositions[num - 5];
+        }
+        if (num <= 5) return redInnerPositions[num - 1];
+        if (num <= 8) return redOuterPositions[num - 6];
+        return redBenchPositions[num - 9];
+      }
+      function initialRedPlayers(keepExistingPositions = false) {
+        const existingRedPlayers = new Map(players
+          .filter((player) => player.team === "B")
+          .map((player) => [player.num, player]));
+        return Array.from({ length: redPlayerCount }, (_, index) => {
+          const num = index + 1;
+          const existing = keepExistingPositions ? existingRedPlayers.get(num) : null;
+          const shouldKeepPosition = existing?.moved === true;
+          const [nextX, nextY] = shouldKeepPosition ? [existing.x, existing.y] : redPlayerPosition(num, redPlayerCount);
+          return { id: `B${num}`, team: "B", num, name: redTeamPlayerNames[index], x: nextX, y: nextY, moved: shouldKeepPosition };
+        });
+      }
+      function initialPlayers() {
+        const a = [
+          [1, 5.8, 2.55], [2, 5.8, 3.65], [3, 5.8, 4.75], [4, 5.8, 6.15], [5, 5.8, 7.25],
+          [6, 18.5, 5], [7, 14, 0.75], [8, 14, 9.25]
+        ].map(([num, x, y]) => ({ id: `A${num}`, team: "A", num, x, y }));
+        return [...a, ...initialRedPlayers()];
+      }
+      function makeSvg(tag) {
+        return document.createElementNS("http://www.w3.org/2000/svg", tag);
+      }
+      function pointFromEvent(event) {
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+        return {
+          x: Math.max(0.25, Math.min(19.75, p.x)),
+          y: Math.max(0.25, Math.min(11.75, p.y))
+        };
+      }
+      function setMode(nextMode) {
+        mode = nextMode;
+        modeButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === mode);
+        });
+        fullscreenModeButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === mode);
+        });
+      }
+      function updateNameToggle() {
+        [nameToggle, fullscreenNameToggle].forEach((button) => {
+          if (!button) return;
+          button.textContent = showRedNames ? "名前 ON" : "名前 OFF";
+          button.classList.toggle("active", showRedNames);
+          button.setAttribute("aria-pressed", showRedNames ? "true" : "false");
+        });
+      }
+      function toggleRedNames() {
+        showRedNames = !showRedNames;
+        updateNameToggle();
+        renderPieces();
+      }
+      function buildSettingsOptions() {
+        settingsPlayerCount.textContent = "";
+        for (let count = minRedPlayers; count <= maxRedPlayers; count += 1) {
+          const option = document.createElement("option");
+          option.value = String(count);
+          option.textContent = `${count}人`;
+          settingsPlayerCount.appendChild(option);
+        }
+      }
+      function visibleSettingsCount() {
+        return clampRedPlayerCount(settingsPlayerCount.value);
+      }
+      function updateSettingsNameVisibility() {
+        const count = visibleSettingsCount();
+        settingsPlayerNames.querySelectorAll(".settings-row").forEach((row) => {
+          row.hidden = Number(row.dataset.num) > count;
+        });
+      }
+      function buildSettingsNameInputs() {
+        settingsPlayerNames.textContent = "";
+        for (let index = 0; index < maxRedPlayers; index += 1) {
+          const num = index + 1;
+          const label = document.createElement("label");
+          label.className = "settings-row";
+          label.dataset.num = String(num);
+          label.textContent = `選手${num}`;
+          const input = document.createElement("input");
+          input.type = "text";
+          input.autocomplete = "off";
+          input.inputMode = "text";
+          input.dataset.index = String(index);
+          input.setAttribute("aria-label", `選手${num}`);
+          label.appendChild(input);
+          settingsPlayerNames.appendChild(label);
+        }
+      }
+      function readSettingsDraft() {
+        const names = blankPlayerNames();
+        settingsPlayerNames.querySelectorAll("input").forEach((input) => {
+          names[Number(input.dataset.index)] = input.value;
+        });
+        return sanitizeSettings({
+          opponent: settingsOpponent.value,
+          period: settingsPeriod.value,
+          playerCount: settingsPlayerCount.value,
+          playerNames: names
+        });
+      }
+      function writeSettingsDraft(settings) {
+        const next = sanitizeSettings(settings);
+        settingsOpponent.value = next.opponent;
+        settingsPeriod.value = next.period;
+        settingsPlayerCount.value = String(next.playerCount);
+        settingsPlayerNames.querySelectorAll("input").forEach((input) => {
+          input.value = next.playerNames[Number(input.dataset.index)];
+        });
+        updateSettingsNameVisibility();
+      }
+      function openSettingsModal() {
+        writeSettingsDraft(currentSettings());
+        settingsModal.classList.add("open");
+        settingsModal.setAttribute("aria-hidden", "false");
+        settingsOpponent.focus();
+      }
+      function closeSettingsModal() {
+        settingsModal.classList.remove("open");
+        settingsModal.setAttribute("aria-hidden", "true");
+      }
+      function isBallRoute(type) {
+        return type === "pass" || type === "attack";
+      }
+      function routeCounts() {
+        return routes.reduce((counts, route) => {
+          if (route.type === "run") {
+            counts.run += 1;
+          } else if (isBallRoute(route.type)) {
+            counts.ball += 1;
+          }
+          return counts;
+        }, { ball: 0, run: 0 });
+      }
+      function updateCounter() {
+        const counts = routeCounts();
+        ballRouteCounter.textContent = `ボール軌道 ${counts.ball}／${maxBallRoutes}`;
+        runRouteCounter.textContent = `選手移動 ${counts.run}／${maxRunRoutes}`;
+        fullscreenBallRouteCounter.textContent = ballRouteCounter.textContent;
+        fullscreenRunRouteCounter.textContent = runRouteCounter.textContent;
+      }
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+      }
+      function saveFileName() {
+        const now = new Date();
+        const pad = (value) => String(value).padStart(2, "0");
+        return `rocks-board-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.png`;
+      }
+      function svgBlobUrl() {
+        const clone = svg.cloneNode(true);
+        clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        clone.setAttribute("width", "2000");
+        clone.setAttribute("height", "1200");
+        clone.setAttribute("viewBox", "0 0 20 12");
+        const style = makeSvg("style");
+        style.textContent = Array.from(document.querySelectorAll("style"))
+          .map((node) => node.textContent)
+          .join("\n");
+        clone.insertBefore(style, clone.firstChild);
+        const source = new XMLSerializer().serializeToString(clone);
+        return URL.createObjectURL(new Blob([source], { type: "image/svg+xml;charset=utf-8" }));
+      }
+      async function saveBoardImage() {
+        const fileName = saveFileName();
+        const isAppleTouchDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        const shouldOpenImage = isAppleTouchDevice || !("download" in HTMLAnchorElement.prototype);
+        const fallbackWindow = shouldOpenImage ? window.open("", "_blank") : null;
+        const image = new Image();
+        const url = svgBlobUrl();
+        try {
+          await new Promise((resolve, reject) => {
+            image.onload = resolve;
+            image.onerror = reject;
+            image.src = url;
+          });
+          const canvas = document.createElement("canvas");
+          canvas.width = 2000;
+          canvas.height = 1200;
+          const context = canvas.getContext("2d");
+          context.fillStyle = "#111821";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/png");
+          if (!shouldOpenImage) {
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          } else if (fallbackWindow) {
+            fallbackWindow.document.title = fileName;
+            fallbackWindow.document.body.style.margin = "0";
+            fallbackWindow.document.body.style.background = "#111821";
+            fallbackWindow.document.body.innerHTML = `<img src="${dataUrl}" alt="${fileName}" style="display:block;width:100%;height:auto;">`;
+          } else {
+            window.open(dataUrl, "_blank");
+          }
+          showToast("画像を保存しました");
+        } catch (_) {
+          if (fallbackWindow) fallbackWindow.close();
+          showToast("画像を保存できませんでした");
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+      function clearSelected() {
+        piecesLayer.querySelectorAll(".selected").forEach((el) => el.classList.remove("selected"));
+      }
+      function closeFullscreenPanel() {
+        document.body.classList.remove("panel-open");
+        fullscreenMenuToggle.setAttribute("aria-expanded", "false");
+      }
+      function setFullscreenMode(active) {
+        document.body.classList.toggle("fullscreen-mode", active);
+        fullscreenUi.setAttribute("aria-hidden", active ? "false" : "true");
+        fullscreenToggle.setAttribute("aria-pressed", active ? "true" : "false");
+        fullscreenToggle.textContent = active ? "全画面終了" : "全画面";
+        if (!active) closeFullscreenPanel();
+      }
+      async function enterFullscreenMode() {
+        setFullscreenMode(true);
+        try {
+          if (!document.fullscreenElement && app.requestFullscreen) {
+            await app.requestFullscreen();
+          }
+        } catch (_) {
+          setFullscreenMode(true);
+        }
+      }
+      async function exitFullscreenMode() {
+        try {
+          if (document.fullscreenElement && document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else {
+            setFullscreenMode(false);
+          }
+        } catch (_) {
+          setFullscreenMode(false);
+        }
+      }
+      function toggleFullscreenMode() {
+        if (document.body.classList.contains("fullscreen-mode")) {
+          exitFullscreenMode();
+        } else {
+          enterFullscreenMode();
+        }
+      }
+      function redNameFontSize(name) {
+        const length = Array.from(name).length;
+        if (length <= 3) return 0.25;
+        if (length <= 5) return 0.18;
+        return 0.2;
+      }
+      function redNameLines(name) {
+        const chars = Array.from(name);
+        if (chars.length >= 6) return [chars.slice(0, 3).join(""), chars.slice(3).join("")];
+        return [name];
+      }
+      function appendPlayerLabel(group, player) {
+        if (player.team === "B" && !showRedNames) return;
+        if (player.team === "B" && !player.name.trim()) return;
+        const text = makeSvg("text");
+        text.setAttribute("x", "0");
+        text.setAttribute("y", "0");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "middle");
+        if (player.team === "B") {
+          const lines = redNameLines(player.name);
+          text.classList.add("red-name", "red-player-name");
+          text.setAttribute("style", `font-size: ${redNameFontSize(player.name)}px;`);
+          if (lines.length === 1) {
+            text.textContent = player.name;
+            if (Array.from(player.name).length >= 4) {
+              text.setAttribute("textLength", "0.66");
+              text.setAttribute("lengthAdjust", "spacingAndGlyphs");
+            }
+          } else {
+            lines.forEach((line, index) => {
+              const tspan = makeSvg("tspan");
+              tspan.setAttribute("x", "0");
+              tspan.setAttribute("dy", index === 0 ? "-0.1" : "0.22");
+              tspan.textContent = line;
+              text.appendChild(tspan);
+            });
+          }
+        } else {
+          text.textContent = player.num;
+        }
+        group.appendChild(text);
+      }
+      function renderPieces() {
+        piecesLayer.textContent = "";
+        players.forEach((player) => {
+          const g = makeSvg("g");
+          g.classList.add("player");
+          g.classList.add(player.team === "A" ? "team-a" : "team-b");
+          g.dataset.id = player.id;
+          g.setAttribute("transform", `translate(${player.x} ${player.y})`);
+          const hit = makeSvg("circle");
+          hit.classList.add("hit-ring");
+          hit.setAttribute("r", "0.64");
+          g.appendChild(hit);
+          const circle = makeSvg("circle");
+          circle.setAttribute("r", playerRadius);
+          circle.setAttribute("fill", player.team === "A" ? "#1d68d8" : "#d93636");
+          g.appendChild(circle);
+          appendPlayerLabel(g, player);
+          piecesLayer.appendChild(g);
+        });
+        const ballGroup = makeSvg("g");
+        ballGroup.classList.add("ball");
+        ballGroup.dataset.id = "ball";
+        ballGroup.setAttribute("transform", `translate(${ball.x} ${ball.y})`);
+        const ballHit = makeSvg("circle");
+        ballHit.classList.add("hit-ring");
+        ballHit.setAttribute("r", "0.55");
+        ballGroup.appendChild(ballHit);
+        const ballCircle = makeSvg("circle");
+        ballCircle.classList.add("ball-core");
+        ballCircle.setAttribute("r", ballRadius);
+        ballGroup.appendChild(ballCircle);
+        piecesLayer.appendChild(ballGroup);
+      }
+      function routeAnchorAt(point) {
+        const anchors = [
+          ...players.map((player) => ({ x: player.x, y: player.y, radius: playerRadius })),
+          { x: ball.x, y: ball.y, radius: ballRadius }
+        ];
+        return anchors.find((anchor) => Math.hypot(point.x - anchor.x, point.y - anchor.y) <= anchor.radius + 0.28);
+      }
+      function displayRoutePoints(route) {
+        const dx = route.end.x - route.start.x;
+        const dy = route.end.y - route.start.y;
+        const length = Math.hypot(dx, dy);
+        if (length <= 0.01) return { start: route.start, end: route.end, ux: 1, uy: 0, length: 1 };
+        const ux = dx / length;
+        const uy = dy / length;
+        const startAnchor = routeAnchorAt(route.start);
+        const endAnchor = routeAnchorAt(route.end);
+        const startTrim = startAnchor ? startAnchor.radius + 0.08 : 0.08;
+        const endTrim = endAnchor ? endAnchor.radius + 0.18 : 0.12;
+        const trimLimit = Math.max(0, length * 0.42);
+        const safeStartTrim = Math.min(startTrim, trimLimit);
+        const safeEndTrim = Math.min(endTrim, Math.max(0, length - safeStartTrim - 0.12), trimLimit);
+        return {
+          start: { x: route.start.x + ux * safeStartTrim, y: route.start.y + uy * safeStartTrim },
+          end: { x: route.end.x - ux * safeEndTrim, y: route.end.y - uy * safeEndTrim },
+          ux,
+          uy,
+          length: Math.max(0.01, length - safeStartTrim - safeEndTrim)
+        };
+      }
+      function lineElement(route, preview = false) {
+        const style = routeStyles[route.type];
+        const display = displayRoutePoints(route);
+        const line = makeSvg("line");
+        line.classList.add("route-line");
+        line.setAttribute("x1", display.start.x);
+        line.setAttribute("y1", display.start.y);
+        line.setAttribute("x2", display.end.x);
+        line.setAttribute("y2", display.end.y);
+        line.setAttribute("stroke", style.color);
+        line.setAttribute("stroke-width", style.width);
+        line.setAttribute("marker-end", style.marker);
+        line.setAttribute("opacity", preview ? "0.65" : "1");
+        if (style.dash) line.setAttribute("stroke-dasharray", style.dash);
+        return line;
+      }
+      function normalizeArea(area) {
+        const x = Math.min(area.start.x, area.end.x);
+        const y = Math.min(area.start.y, area.end.y);
+        const width = Math.abs(area.end.x - area.start.x);
+        const height = Math.abs(area.end.y - area.start.y);
+        return { x, y, width, height };
+      }
+      function areaElement(area, preview = false) {
+        const box = normalizeArea(area);
+        const rect = makeSvg("rect");
+        rect.classList.add("area-box");
+        if (preview) rect.classList.add("preview");
+        rect.setAttribute("x", box.x);
+        rect.setAttribute("y", box.y);
+        rect.setAttribute("width", box.width);
+        rect.setAttribute("height", box.height);
+        rect.setAttribute("rx", "0.12");
+        rect.setAttribute("ry", "0.12");
+        return rect;
+      }
+      function renderAreas() {
+        areasLayer.textContent = "";
+        areas.forEach((area) => areasLayer.appendChild(areaElement(area)));
+      }
+      function renderAreaPreview(area) {
+        areaPreviewLayer.textContent = "";
+        if (area) areaPreviewLayer.appendChild(areaElement(area, true));
+      }
+      function routeLabelCollides(x, y, width, height, occupiedLabels) {
+        const halfDiagonal = Math.hypot(width / 2, height / 2);
+        const anchors = [
+          ...players.map((player) => ({ x: player.x, y: player.y, radius: playerRadius })),
+          { x: ball.x, y: ball.y, radius: ballRadius }
+        ];
+        if (anchors.some((anchor) => Math.hypot(x - anchor.x, y - anchor.y) < anchor.radius + halfDiagonal + 0.08)) return true;
+        return occupiedLabels.some((label) => (
+          Math.abs(x - label.x) < (width + label.width) / 2 + 0.08 &&
+          Math.abs(y - label.y) < (height + label.height) / 2 + 0.08
+        ));
+      }
+      function routeLabelPosition(route, width, height, occupiedLabels) {
+        const dx = route.end.x - route.start.x;
+        const dy = route.end.y - route.start.y;
+        const length = Math.hypot(dx, dy) || 1;
+        const ux = dx / length;
+        const uy = dy / length;
+        const px = -uy;
+        const py = ux;
+        const candidates = [
+          [0.25, 0.46], [0.25, -0.46],
+          [0.28, 0.5], [0.28, -0.5],
+          [0.22, 0.54], [0.22, -0.54],
+          [0.3, 0.62], [0.3, -0.62]
+        ];
+        for (const [t, perpOffset] of candidates) {
+          const x = route.start.x + dx * t + px * perpOffset;
+          const y = route.start.y + dy * t + py * perpOffset;
+          if (!routeLabelCollides(x, y, width, height, occupiedLabels)) return { x, y };
+        }
+        return { x: route.start.x + dx * 0.3 + px * 0.72, y: route.start.y + dy * 0.3 + py * 0.72 };
+      }
+      function renderRoutes() {
+        routesLayer.textContent = "";
+        routeLabelsLayer.textContent = "";
+        let ballRouteNumber = 0;
+        let runRouteNumber = 0;
+        const occupiedLabels = [];
+        routes.forEach((route) => {
+          routesLayer.appendChild(lineElement(route));
+          const isRunRoute = route.type === "run";
+          const routeNumber = isRunRoute ? ++runRouteNumber : ++ballRouteNumber;
+          const labelWidth = routeNumber >= 10 ? 0.62 : 0.5;
+          const labelHeight = 0.42;
+          const label = routeLabelPosition(route, labelWidth, labelHeight, occupiedLabels);
+          occupiedLabels.push({ x: label.x, y: label.y, width: labelWidth, height: labelHeight });
+          const g = makeSvg("g");
+          g.classList.add("route-label");
+          g.classList.add(isRunRoute ? "run-route" : "ball-route");
+          g.setAttribute("transform", `translate(${label.x} ${label.y})`);
+          const rect = makeSvg("rect");
+          rect.setAttribute("x", -labelWidth / 2);
+          rect.setAttribute("y", -labelHeight / 2);
+          rect.setAttribute("width", labelWidth);
+          rect.setAttribute("height", labelHeight);
+          rect.setAttribute("fill", isRunRoute ? "#f1f3f5" : "#ffffff");
+          rect.setAttribute("stroke", isRunRoute ? "#727985" : "#30343a");
+          rect.setAttribute("stroke-width", "0.035");
+          rect.setAttribute("rx", "0.08");
+          rect.setAttribute("ry", "0.08");
+          if (isRunRoute) rect.setAttribute("stroke-dasharray", "0.08 0.06");
+          g.appendChild(rect);
+          const text = makeSvg("text");
+          text.setAttribute("x", "0");
+          text.setAttribute("y", "0");
+          text.setAttribute("fill", isRunRoute ? "#30343a" : "#111827");
+          text.setAttribute("font-size", "0.32");
+          text.setAttribute("font-weight", "900");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("dominant-baseline", "middle");
+          text.textContent = routeNumber;
+          g.appendChild(text);
+          routeLabelsLayer.appendChild(g);
+        });
+        updateCounter();
+      }
+      function renderPreview(route) {
+        previewLayer.textContent = "";
+        if (route) previewLayer.appendChild(lineElement(route, true));
+      }
+      function resetAll() {
+        players = initialPlayers();
+        ball = { x: 10.55, y: 5 };
+        routes = [];
+        areas = [];
+        history = [];
+        interaction = null;
+        clearSelected();
+        renderAreas();
+        renderAreaPreview(null);
+        renderRoutes();
+        renderPieces();
+        updateMatchInfo();
+      }
+      function beginMove(event, target) {
+        const id = target.dataset.id;
+        const point = pointFromEvent(event);
+        const item = id === "ball" ? ball : players.find((player) => player.id === id);
+        if (!item) return;
+        interaction = { kind: "move", id, dx: item.x - point.x, dy: item.y - point.y, pointerId: event.pointerId };
+        clearSelected();
+        target.classList.add("selected");
+        try {
+          target.setPointerCapture(event.pointerId);
+        } catch (_) {
+          /* Pointer capture can be unavailable for synthetic touch checks. */
+        }
+      }
+      function beginRoute(event) {
+        const counts = routeCounts();
+        if (mode === "run" && counts.run >= maxRunRoutes) {
+          showToast("選手移動は10本までです");
+          return;
+        }
+        if (isBallRoute(mode) && counts.ball >= maxBallRoutes) {
+          showToast("ボール軌道は10本までです");
+          return;
+        }
+        const start = pointFromEvent(event);
+        interaction = { kind: "route", type: mode, start, end: start, pointerId: event.pointerId };
+        try {
+          svg.setPointerCapture(event.pointerId);
+        } catch (_) {
+          /* Pointer capture can be unavailable for synthetic touch checks. */
+        }
+        renderPreview(interaction);
+      }
+      function beginArea(event) {
+        if (areas.length >= maxAreas) {
+          showToast("エリアは10個までです");
+          return;
+        }
+        const start = pointFromEvent(event);
+        interaction = { kind: "area", start, end: start, pointerId: event.pointerId };
+        try {
+          svg.setPointerCapture(event.pointerId);
+        } catch (_) {
+          /* Pointer capture can be unavailable for synthetic touch checks. */
+        }
+        renderAreaPreview(interaction);
+      }
+      function handlePointerDown(event) {
+        if (event.button !== undefined && event.button !== 0) return;
+        event.preventDefault();
+        const piece = event.target.closest(".player, .ball");
+        if (mode === "area") {
+          beginArea(event);
+        } else if (mode === "move" && piece) {
+          beginMove(event, piece);
+        } else if (mode !== "move") {
+          beginRoute(event);
+        }
+      }
+      function handlePointerMove(event) {
+        if (!interaction || interaction.pointerId !== event.pointerId) return;
+        event.preventDefault();
+        const point = pointFromEvent(event);
+        if (interaction.kind === "move") {
+          const x = Math.max(0.25, Math.min(19.75, point.x + interaction.dx));
+          const y = Math.max(0.25, Math.min(11.75, point.y + interaction.dy));
+          if (interaction.id === "ball") {
+            ball.x = x;
+            ball.y = y;
+          } else {
+            const player = players.find((p) => p.id === interaction.id);
+            if (player) {
+              player.x = x;
+              player.y = y;
+              player.moved = true;
+            }
+          }
+          renderPieces();
+          const selected = piecesLayer.querySelector(`[data-id="${interaction.id}"]`);
+          if (selected) selected.classList.add("selected");
+        } else if (interaction.kind === "area") {
+          interaction.end = point;
+          renderAreaPreview(interaction);
+        } else {
+          interaction.end = point;
+          renderPreview(interaction);
+        }
+      }
+      function handlePointerUp(event) {
+        if (!interaction || interaction.pointerId !== event.pointerId) return;
+        event.preventDefault();
+        if (interaction.kind === "route") {
+          const dx = interaction.end.x - interaction.start.x;
+          const dy = interaction.end.y - interaction.start.y;
+          if (Math.hypot(dx, dy) > 0.25) {
+            routes.push({ type: interaction.type, start: interaction.start, end: interaction.end });
+            history.push({ type: "route", routeType: interaction.type });
+            renderRoutes();
+          }
+          renderPreview(null);
+        } else if (interaction.kind === "area") {
+          const box = normalizeArea(interaction);
+          if (box.width > 0.15 && box.height > 0.15) {
+            areas.push({ start: interaction.start, end: interaction.end });
+            history.push({ type: "area" });
+            renderAreas();
+          }
+          renderAreaPreview(null);
+        } else if (interaction.kind === "move") {
+          clearSelected();
+        }
+        interaction = null;
+      }
+      modeButtons.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
+      fullscreenToggle.addEventListener("click", toggleFullscreenMode);
+      fullscreenExit.addEventListener("click", exitFullscreenMode);
+      saveBoard.addEventListener("click", saveBoardImage);
+      settingsOpen.addEventListener("click", openSettingsModal);
+      settingsPlayerCount.addEventListener("change", updateSettingsNameVisibility);
+      settingsSave.addEventListener("click", () => {
+        const next = readSettingsDraft();
+        applySettings(next);
+        storeSettings(next);
+        closeSettingsModal();
+      });
+      settingsCancel.addEventListener("click", closeSettingsModal);
+      settingsClear.addEventListener("click", () => {
+        if (!window.confirm("入力内容を消去しますか？")) return;
+        const next = defaultSettings();
+        writeSettingsDraft(next);
+        applySettings(next);
+        storeSettings(next);
+      });
+      fullscreenMenuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isOpen = document.body.classList.toggle("panel-open");
+        fullscreenMenuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+      fullscreenScrim.addEventListener("pointerdown", closeFullscreenPanel);
+      fullscreenPanel.addEventListener("pointerdown", (event) => event.stopPropagation());
+      fullscreenPanel.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        if (button.dataset.mode) {
+          setMode(button.dataset.mode);
+          closeFullscreenPanel();
+          return;
+        }
+        if (button.dataset.action) {
+          if (button.dataset.action === "toggleNames") {
+            toggleRedNames();
+            closeFullscreenPanel();
+            return;
+          }
+          document.getElementById(button.dataset.action).click();
+          closeFullscreenPanel();
+        }
+      });
+      document.addEventListener("fullscreenchange", () => {
+        setFullscreenMode(Boolean(document.fullscreenElement));
+      });
+      document.getElementById("undo").addEventListener("click", () => {
+        const last = history.pop();
+        if (last?.type === "area") {
+          areas.pop();
+          renderAreas();
+          return;
+        }
+        if (last?.type === "route") {
+          routes.pop();
+        } else if (routes.length) {
+          routes.pop();
+        } else if (areas.length) {
+          areas.pop();
+          renderAreas();
+          return;
+        }
+        renderRoutes();
+      });
+      document.getElementById("clearRoutes").addEventListener("click", () => {
+        routes = [];
+        history = history.filter((item) => item.type !== "route");
+        renderRoutes();
+      });
+      document.getElementById("clearAreas").addEventListener("click", () => {
+        areas = [];
+        history = history.filter((item) => item.type !== "area");
+        renderAreas();
+      });
+      nameToggle.addEventListener("click", toggleRedNames);
+      document.getElementById("reset").addEventListener("click", () => {
+        resetAll();
+        setMode("move");
+      });
+      svg.addEventListener("pointerdown", handlePointerDown);
+      svg.addEventListener("pointermove", handlePointerMove);
+      svg.addEventListener("pointerup", handlePointerUp);
+      svg.addEventListener("pointercancel", handlePointerUp);
+      window.addEventListener("blur", () => {
+        interaction = null;
+        renderPreview(null);
+        renderAreaPreview(null);
+      });
+      buildSettingsOptions();
+      buildSettingsNameInputs();
+      applySettings(loadStoredSettings());
+      resetAll();
+      updateNameToggle();
+    })();
+  </script>
+</body>
+</html>
