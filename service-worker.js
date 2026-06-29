@@ -1,4 +1,4 @@
-const CACHE_NAME = "rocks-board-v1";
+const CACHE_NAME = "rocks-board-v2";
 const APP_SHELL = [
   "./",
   "./index.html",

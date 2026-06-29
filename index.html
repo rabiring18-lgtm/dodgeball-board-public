@@ -1142,6 +1142,7 @@
           </label>
           <label class="settings-row">前半／後半
             <select id="settingsPeriod">
+              <option value="none">指定なし</option>
               <option value="first">前半</option>
               <option value="second">後半</option>
             </select>
@@ -1224,7 +1225,7 @@
       ];
       let mode = "move";
       let matchOpponent = "";
-      let matchPeriod = "first";
+      let matchPeriod = "none";
       let redPlayerCount = defaultRedPlayers;
       let players = [];
       let ball = { x: 10.55, y: 5 };
@@ -1249,10 +1250,15 @@
       function defaultSettings() {
         return {
           opponent: "",
-          period: "first",
+          period: "none",
           playerCount: defaultRedPlayers,
           playerNames: blankPlayerNames()
         };
+      }
+      function normalizePeriod(value) {
+        if (value === "first" || value === "前半") return "first";
+        if (value === "second" || value === "後半") return "second";
+        return "none";
       }
       function sanitizeSettings(value) {
         const base = defaultSettings();
@@ -1260,7 +1266,7 @@
         const names = Array.isArray(value.playerNames) ? value.playerNames : [];
         return {
           opponent: typeof value.opponent === "string" ? value.opponent : "",
-          period: value.period === "second" ? "second" : "first",
+          period: normalizePeriod(value.period),
           playerCount: clampRedPlayerCount(value.playerCount),
           playerNames: base.playerNames.map((_, index) => typeof names[index] === "string" ? names[index] : "")
         };
@@ -1288,9 +1294,9 @@
         };
       }
       function updateMatchInfo() {
-        const periodText = matchPeriod === "second" ? "後半" : "前半";
+        const periodText = matchPeriod === "first" ? "前半" : matchPeriod === "second" ? "後半" : "";
         const opponentText = matchOpponent.trim() ? ` vs ${matchOpponent.trim()}` : "";
-        matchInfoLabel.textContent = `ROCKS${opponentText}｜${periodText}`;
+        matchInfoLabel.textContent = `ROCKS${opponentText}${periodText ? `｜${periodText}` : ""}`;
         matchInfoLabel.removeAttribute("textLength");
         matchInfoLabel.removeAttribute("lengthAdjust");
         const maxPlateWidth = 18.4;
